@@ -8,7 +8,8 @@ import (
 )
 
 func main() {
-	database.DbIn()
-	http.HandleFunc("/", handler.Register)
+	DB, _ := database.DbIn()
+	defer DB.Close()
+	http.HandleFunc("/register", handler.Register)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

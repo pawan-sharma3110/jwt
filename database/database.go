@@ -7,9 +7,9 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var DB sql.DB
+// var DB *sql.DB
 
-func DbIn() {
+func DbIn() (*sql.DB, error) {
 	var err error
 	connStr := `host=localhost port=5432 user=postgres dbname=jwt password=Pawan@2003 sslmode=disable`
 	DB, err := sql.Open("postgres", connStr)
@@ -23,6 +23,7 @@ func DbIn() {
 	DB.SetMaxIdleConns(5)
 	// Uncomment this if you need to create tables
 	createTable(DB)
+	return DB, nil
 }
 
 func createTable(db *sql.DB) {

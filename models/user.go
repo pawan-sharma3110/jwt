@@ -14,6 +14,7 @@ type User struct {
 }
 
 func (u User) SaveUser() (id string, err error) {
+	DB, _ := database.DbIn()
 	password, err := bcrypt.GenerateFromPassword([]byte(u.Password), 10)
 	if err != nil {
 		return "", err
@@ -21,7 +22,7 @@ func (u User) SaveUser() (id string, err error) {
 	u.Password = string(password)
 	u.ID = uuid.New()
 	query := `INSERT INTO users(id,email,password)VALUES($1,$2,$3)RETURNING id`
-	stmt, err := database.DB.Prepare(query)
+	stmt, err := DB.Prepare(query)
 	if err != nil {
 		return "", err
 	}
