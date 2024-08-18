@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"jwt/models"
+	"jwt/utils"
 	"net/http"
 )
 
@@ -79,10 +80,15 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
+	user.ID = id
+	token, err := utils.GernateJwt(user.ID, user.Email)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	w.Header().Set("Content-type", "aplication/json")
 	w.WriteHeader(http.StatusCreated)
-	err = json.NewEncoder(w).Encode(fmt.Sprintf("user login successfuly id:%v", id))
+	err = json.NewEncoder(w).Encode(fmt.Sprintf("user login successfuly token:%v", token))
 	if err != nil {
 		http.Error(w, fmt.Sprintf("error:%v", err), http.StatusInternalServerError)
 		return
