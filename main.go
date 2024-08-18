@@ -11,5 +11,6 @@ func main() {
 	DB, _ := database.DbIn()
 	defer DB.Close()
 	http.HandleFunc("/register", handler.Register)
+	http.HandleFunc("/login", handler.Login)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

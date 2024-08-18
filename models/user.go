@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"jwt/database"
 
 	"github.com/google/uuid"
@@ -32,4 +33,19 @@ func (u User) SaveUser() (id string, err error) {
 		return "", err
 	}
 	return id, nil
+}
+
+func (u User) Validation() (*uuid.UUID, error) {
+	DB, _ := database.DbIn()
+	var pass string
+	query := `SELECT id,password FROM users WHERE email=$1 `
+	err := DB.QueryRow(query, u.Email).Scan(&u.ID, &pass)
+	if err != nil {
+		return nil, err
+	}
+	isValid := bcrypt.CompareHashAndPassword([]byte(pass), []byte(u.Password))
+	if isValid != nil {
+		return nil, errors.New("invalid password")
+	}
+	return &u.ID, nil
 }
