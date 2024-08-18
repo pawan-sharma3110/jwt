@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"jwt/database"
 
 	"github.com/google/uuid"
@@ -48,4 +49,26 @@ func (u User) Validation() (*uuid.UUID, error) {
 		return nil, errors.New("invalid password")
 	}
 	return &u.ID, nil
+}
+func AllUserGet() ([]User, error) {
+	DB, _ := database.DbIn()
+	query := `SELECT id,email FROM users`
+	row, err := DB.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	var users []User
+	for row.Next() {
+		var user User
+		err = row.Scan(&user.ID, &user.Email)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+	if err := row.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating rows: %w", err)
+	}
+	return users, nil
+
 }
